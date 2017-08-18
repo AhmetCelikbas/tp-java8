@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
@@ -24,8 +25,12 @@ public class Stream_02_Test {
         List<Order> orders = new Data().getOrders();
 
         // Trouver la liste des clients ayant déjà passés une commande
-        List<Customer> result = null;
-
+        List<Customer> result = orders.stream()
+        			.map(order -> order.getCustomer())
+        			.distinct()
+        			.collect(Collectors.toList());
+        
+        System.out.println(result.size());;
         assertThat(result, hasSize(2));
     }
 
@@ -36,7 +41,10 @@ public class Stream_02_Test {
 
         // TODO calculer les statistiques sur les prix des pizzas vendues
         // TODO utiliser l'opération summaryStatistics
-        IntSummaryStatistics result = null;
+        IntSummaryStatistics result = orders.stream()
+							        		.flatMap(order -> order.getPizzas().stream())
+							        		.mapToInt(pizza -> pizza.getPrice())
+							        		.summaryStatistics();
 
 
         assertThat(result.getSum(), is(10900L));
